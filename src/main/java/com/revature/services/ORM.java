@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.revature.Driver;
 import com.revature.utils.ConnectionUtil;
 
 import dev.rehm.exceptions.JsonMappingException;
@@ -19,7 +23,8 @@ import dev.rehm.exceptions.JsonMappingException;
 public class ORM {
 
 	private Connection connection;
-
+	private static Logger log = LoggerFactory.getLogger(ORM.class);
+	
 	public ORM() {
 
 	}
@@ -72,20 +77,15 @@ public class ORM {
 				valueBuilder.append(fieldValue + ",");
 
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			}
 
 		}
@@ -96,8 +96,7 @@ public class ORM {
 		statmentBuilder.append(fieldBuilder + ") VALUES (" + valueBuilder + ") RETURNING id;");
 
 		String sql = statmentBuilder.toString();
-		System.out.println(sql);
-
+		log.info(sql);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result = statement.executeQuery();
@@ -107,7 +106,7 @@ public class ORM {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		}
 		return -1;
 	}
@@ -122,7 +121,7 @@ public class ORM {
 		Field[] fields = clazz.getFields();
 
 		String sql = "SELECT * from " + className + ";";
-		System.out.println(sql);
+		log.info(sql);
 
 		try {
 
@@ -163,17 +162,14 @@ public class ORM {
 						setter.invoke(newObject, fieldValue);
 
 					} catch (NoSuchFieldException e) {
-						e.printStackTrace();
+						log.error(e.getLocalizedMessage(), e);
 
 					} catch (NoSuchMethodException e) {
-						e.printStackTrace();
-
+						log.error(e.getLocalizedMessage(), e);
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-
+						log.error(e.getLocalizedMessage(), e);
 					} catch (InvocationTargetException | InstantiationException e) {
-						e.printStackTrace();
-
+						log.error(e.getLocalizedMessage(), e);
 					}
 				}
 
@@ -183,7 +179,7 @@ public class ORM {
 
 			return objects;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
@@ -225,20 +221,16 @@ public class ORM {
 				statmentBuilder.append(fieldName + " = " + fieldValue + ",");
 
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage(), e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+				log.error(e.getLocalizedMessage(), e);
 			}
 
 		}
@@ -247,14 +239,13 @@ public class ORM {
 		statmentBuilder.append(" WHERE id = " + id + ";");
 
 		String sql = statmentBuilder.toString();
-		System.out.println(sql);
-
+		log.info(sql);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result = statement.executeQuery();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		}
 
 	}
@@ -283,31 +274,25 @@ public class ORM {
 			statmentBuilder.append(fieldValue + ";");
 
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		}
 
 		String sql = statmentBuilder.toString();
-		System.out.println(sql);
-
+		log.info(sql);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result = statement.executeQuery();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error(e.getLocalizedMessage(), e);
 		}
 
 	}
