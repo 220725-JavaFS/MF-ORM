@@ -69,7 +69,11 @@ public class ORM {
 				// invoke that method on the object that we are mapping
 				Object fieldValue = getterMethod.invoke(o);
 
-				valueBuilder.append(fieldValue + ",");
+				if (fieldValue.getClass() == String.class) {
+					valueBuilder.append("'" + fieldValue + "',");
+				} else {
+					valueBuilder.append(fieldValue + ",");
+				}
 
 			} catch (NoSuchMethodException e) {
 				log.error(e.getLocalizedMessage(), e);
@@ -176,7 +180,7 @@ public class ORM {
 	}
 
 	public boolean updateObject(Object o) {
-		
+
 		StringBuilder statmentBuilder = new StringBuilder();
 		statmentBuilder.append("UPDATE ");
 
@@ -209,7 +213,11 @@ public class ORM {
 					id = fieldValue.toString();
 					continue;
 				}
-				statmentBuilder.append(fieldName + " = " + fieldValue + ",");
+				if (fieldValue.getClass() == String.class) {
+					statmentBuilder.append(fieldName + " = '" + fieldValue + "',");
+				} else {
+					statmentBuilder.append(fieldName + " = " + fieldValue + ",");
+				}
 
 			} catch (NoSuchMethodException e) {
 				log.error(e.getLocalizedMessage(), e);
