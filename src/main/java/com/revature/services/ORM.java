@@ -15,16 +15,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.revature.Driver;
-import com.revature.utils.ConnectionUtil;
-
-import dev.rehm.exceptions.JsonMappingException;
-
 public class ORM {
 
 	private Connection connection;
 	private static Logger log = LoggerFactory.getLogger(ORM.class);
-	
+
 	public ORM() {
 
 	}
@@ -37,6 +32,14 @@ public class ORM {
 		this.connection = connection;
 	}
 
+	public ResultSet executeQuerry(String sql) throws SQLException {
+
+		PreparedStatement statement = connection.prepareStatement(sql);
+		ResultSet result = statement.executeQuery();
+		return result;
+
+	}
+
 	public int storeObject(Object o) {
 
 		StringBuilder statmentBuilder = new StringBuilder();
@@ -44,7 +47,7 @@ public class ORM {
 
 		// obtain the names of the fields in the object
 		Class<?> objectClass = o.getClass();
-		String[] tokens = objectClass.getName().split(".");
+		String[] tokens = objectClass.getName().split("\\.");
 		String className = tokens[tokens.length - 1];
 
 		statmentBuilder.append(className + "(");
@@ -98,9 +101,8 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			PreparedStatement statement = connection.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
-
+			ResultSet result = executeQuerry(sql);
+			log.info("Object stored.");
 			if (result.next()) {
 				return result.getInt("id");
 			}
@@ -115,7 +117,7 @@ public class ORM {
 
 		ArrayList<T> objects = new ArrayList<T>();
 
-		String[] tokens = clazz.getName().split(".");
+		String[] tokens = clazz.getName().split("\\.");
 		String className = tokens[tokens.length - 1];
 
 		Field[] fields = clazz.getFields();
@@ -125,8 +127,7 @@ public class ORM {
 
 		try {
 
-			PreparedStatement statement = connection.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
+			ResultSet result = executeQuerry(sql);
 
 			while (result.next()) {
 				T newObject = null;
@@ -137,7 +138,7 @@ public class ORM {
 
 				} catch (InstantiationException | IllegalAccessException | InvocationTargetException
 						| NoSuchMethodException e) {
-					e.printStackTrace();
+					log.error(e.getLocalizedMessage(), e);
 				}
 
 				for (Field field : fields) {
@@ -163,7 +164,6 @@ public class ORM {
 
 					} catch (NoSuchFieldException e) {
 						log.error(e.getLocalizedMessage(), e);
-
 					} catch (NoSuchMethodException e) {
 						log.error(e.getLocalizedMessage(), e);
 					} catch (IllegalAccessException e) {
@@ -176,11 +176,13 @@ public class ORM {
 				objects.add(newObject);
 
 			}
+			log.info("Objects retrived.");
 
 			return objects;
 		} catch (SQLException e) {
 			log.error(e.getLocalizedMessage(), e);
 		}
+
 		return null;
 	}
 
@@ -191,7 +193,7 @@ public class ORM {
 
 		// obtain the names of the fields in the object
 		Class<?> objectClass = o.getClass();
-		String[] tokens = objectClass.getName().split(".");
+		String[] tokens = objectClass.getName().split("\\.");
 		String className = tokens[tokens.length - 1];
 
 		statmentBuilder.append(className + " SET ");
@@ -241,13 +243,12 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			PreparedStatement statement = connection.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
-
+			executeQuerry(sql);
+			log.info("Object updated.");
+			return;
 		} catch (SQLException e) {
 			log.error(e.getLocalizedMessage(), e);
 		}
-
 	}
 
 	public void deleteObject(Object o) {
@@ -257,7 +258,7 @@ public class ORM {
 
 		// obtain the names of the fields in the object
 		Class<?> objectClass = o.getClass();
-		String[] tokens = objectClass.getName().split(".");
+		String[] tokens = objectClass.getName().split("\\.");
 		String className = tokens[tokens.length - 1];
 
 		statmentBuilder.append(className + " WHERE  id  =");
@@ -288,9 +289,8 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			PreparedStatement statement = connection.prepareStatement(sql);
-			ResultSet result = statement.executeQuery();
-
+			executeQuerry(sql);
+			log.info("Object deleted.");
 		} catch (SQLException e) {
 			log.error(e.getLocalizedMessage(), e);
 		}

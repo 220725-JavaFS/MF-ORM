@@ -1,0 +1,9 @@
+15:23:00.486 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:24:19.047 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:39:18.392 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:48:39.963 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:50:03.507 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:52:17.765 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+15:53:30.957 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+16:18:47.011 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES (object,this is a test object) RETURNING id;
+16:18:47.015 [] [main] INFO  com.revature.services.ORM - Object stored.
