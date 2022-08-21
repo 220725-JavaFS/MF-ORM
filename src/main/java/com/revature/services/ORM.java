@@ -20,18 +20,18 @@ public class ORM {
 
 	private Connection connection;
 
-	public ORM(){
-		
+	public ORM() {
+
 	}
-	
-	public ORM(Connection connection){
+
+	public ORM(Connection connection) {
 		this.connection = connection;
 	}
-	
-	public void setConnection(Connection connection){
+
+	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
-	
+
 	public int storeObject(Object o) {
 
 		StringBuilder statmentBuilder = new StringBuilder();
@@ -44,7 +44,7 @@ public class ORM {
 
 		statmentBuilder.append(className + "(");
 
-		Field[] fields = objectClass.getDeclaredFields();
+		Field[] fields = objectClass.getFields();
 
 		StringBuilder fieldBuilder = new StringBuilder();
 		StringBuilder valueBuilder = new StringBuilder();
@@ -96,6 +96,7 @@ public class ORM {
 		statmentBuilder.append(fieldBuilder + ") VALUES (" + valueBuilder + ") RETURNING id;");
 
 		String sql = statmentBuilder.toString();
+		System.out.println(sql);
 
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
@@ -118,10 +119,13 @@ public class ORM {
 		String[] tokens = clazz.getName().split(".");
 		String className = tokens[tokens.length - 1];
 
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = clazz.getFields();
+
+		String sql = "SELECT * from " + className + ";";
+		System.out.println(sql);
 
 		try {
-			String sql = "SELECT * from " + className + ";";
+
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result = statement.executeQuery();
 
@@ -172,9 +176,9 @@ public class ORM {
 
 					}
 				}
-				
+
 				objects.add(newObject);
-				
+
 			}
 
 			return objects;
@@ -182,6 +186,130 @@ public class ORM {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void updateObject(Object o) {
+
+		StringBuilder statmentBuilder = new StringBuilder();
+		statmentBuilder.append("UPDATE ");
+
+		// obtain the names of the fields in the object
+		Class<?> objectClass = o.getClass();
+		String[] tokens = objectClass.getName().split(".");
+		String className = tokens[tokens.length - 1];
+
+		statmentBuilder.append(className + " SET ");
+
+		Field[] fields = objectClass.getFields();
+
+		String id = "";
+		for (Field field : fields) {
+
+			String fieldName = field.getName();
+
+			// obtain the appropriate getter (using the field name)
+			String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+//			System.out.println(getterName);
+
+			try {
+				// obtain the getter method from the class we are mapping
+				Method getterMethod = objectClass.getMethod(getterName);
+
+				// invoke that method on the object that we are mapping
+				Object fieldValue = getterMethod.invoke(o);
+
+				if (fieldName == "id") {
+					id = fieldValue.toString();
+					continue;
+				}
+				statmentBuilder.append(fieldName + " = " + fieldValue + ",");
+
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		statmentBuilder.deleteCharAt(statmentBuilder.length() - 1);
+		statmentBuilder.append(" WHERE id = " + id + ";");
+
+		String sql = statmentBuilder.toString();
+		System.out.println(sql);
+
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet result = statement.executeQuery();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void deleteObject(Object o) {
+
+		StringBuilder statmentBuilder = new StringBuilder();
+		statmentBuilder.append("DELETE FROM ");
+
+		// obtain the names of the fields in the object
+		Class<?> objectClass = o.getClass();
+		String[] tokens = objectClass.getName().split(".");
+		String className = tokens[tokens.length - 1];
+
+		statmentBuilder.append(className + " WHERE  id  =");
+
+		String getterName = "getId";
+
+		try {
+			// obtain the getter method from the class we are mapping
+			Method getterMethod = objectClass.getMethod(getterName);
+
+			// invoke that method on the object that we are mapping
+			Object fieldValue = getterMethod.invoke(o);
+
+			statmentBuilder.append(fieldValue + ";");
+
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String sql = statmentBuilder.toString();
+		System.out.println(sql);
+
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet result = statement.executeQuery();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private Object convertStringToFieldType(String input, Class<?> type)
