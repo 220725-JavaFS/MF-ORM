@@ -32,14 +32,6 @@ public class ORM {
 		this.connection = connection;
 	}
 
-	public ResultSet executeQuerry(String sql) throws SQLException {
-
-		PreparedStatement statement = connection.prepareStatement(sql);
-		ResultSet result = statement.executeQuery();
-		return result;
-
-	}
-
 	public int storeObject(Object o) {
 
 		StringBuilder statmentBuilder = new StringBuilder();
@@ -101,7 +93,8 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			ResultSet result = executeQuerry(sql);
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet result = statement.executeQuery();
 			log.info("Object stored.");
 			if (result.next()) {
 				return result.getInt("id");
@@ -127,53 +120,49 @@ public class ORM {
 
 		try {
 
-			ResultSet result = executeQuerry(sql);
-
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				T newObject = null;
-
 				try {
 					// create a new instance of the class being constructed
-					newObject = clazz.getDeclaredConstructor().newInstance();
+					T newObject = clazz.getDeclaredConstructor().newInstance();
+					for (Field field : fields) {
 
+						String fieldName = field.getName();
+
+						// obtain the appropriate getter (using the field name)
+						String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+						try {
+							// getting the type of the setter parameter, based on the field type
+							Class<?> setterParamType = clazz.getDeclaredField(fieldName).getType();
+
+							// obtain the setter method using the setter name and setter parameter type
+							Method setter = clazz.getMethod(setterName, setterParamType);
+
+							// below we define a utility method to convert the string field value to the
+
+							// appropriate type for the field
+							Object fieldValue = convertStringToFieldType(result.getString(fieldName), setterParamType);
+
+							// we invoke the setter to populate the field of the object that's being created
+							setter.invoke(newObject, fieldValue);
+
+						} catch (NoSuchFieldException e) {
+							log.error(e.getLocalizedMessage(), e);
+						} catch (NoSuchMethodException e) {
+							log.error(e.getLocalizedMessage(), e);
+						} catch (IllegalAccessException e) {
+							log.error(e.getLocalizedMessage(), e);
+						} catch (InvocationTargetException | InstantiationException e) {
+							log.error(e.getLocalizedMessage(), e);
+						}
+					}
+
+					objects.add(newObject);
 				} catch (InstantiationException | IllegalAccessException | InvocationTargetException
 						| NoSuchMethodException e) {
 					log.error(e.getLocalizedMessage(), e);
 				}
-
-				for (Field field : fields) {
-
-					String fieldName = field.getName();
-
-					// obtain the appropriate getter (using the field name)
-					String setterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-					try {
-						// getting the type of the setter parameter, based on the field type
-						Class<?> setterParamType = clazz.getDeclaredField(fieldName).getType();
-
-						// obtain the setter method using the setter name and setter parameter type
-						Method setter = clazz.getMethod(setterName, setterParamType);
-
-						// below we define a utility method to convert the string field value to the
-
-						// appropriate type for the field
-						Object fieldValue = convertStringToFieldType(result.getString(fieldName), setterParamType);
-
-						// we invoke the setter to populate the field of the object that's being created
-						setter.invoke(newObject, fieldValue);
-
-					} catch (NoSuchFieldException e) {
-						log.error(e.getLocalizedMessage(), e);
-					} catch (NoSuchMethodException e) {
-						log.error(e.getLocalizedMessage(), e);
-					} catch (IllegalAccessException e) {
-						log.error(e.getLocalizedMessage(), e);
-					} catch (InvocationTargetException | InstantiationException e) {
-						log.error(e.getLocalizedMessage(), e);
-					}
-				}
-
-				objects.add(newObject);
 
 			}
 			log.info("Objects retrived.");
@@ -186,8 +175,8 @@ public class ORM {
 		return null;
 	}
 
-	public void updateObject(Object o) {
-
+	public boolean updateObject(Object o) {
+		
 		StringBuilder statmentBuilder = new StringBuilder();
 		statmentBuilder.append("UPDATE ");
 
@@ -243,15 +232,17 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			executeQuerry(sql);
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.executeQuery();
 			log.info("Object updated.");
-			return;
+			return true;
 		} catch (SQLException e) {
 			log.error(e.getLocalizedMessage(), e);
 		}
+		return false;
 	}
 
-	public void deleteObject(Object o) {
+	public boolean deleteObject(Object o) {
 
 		StringBuilder statmentBuilder = new StringBuilder();
 		statmentBuilder.append("DELETE FROM ");
@@ -289,11 +280,14 @@ public class ORM {
 		String sql = statmentBuilder.toString();
 		log.info(sql);
 		try {
-			executeQuerry(sql);
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.executeQuery();
 			log.info("Object deleted.");
+			return true;
 		} catch (SQLException e) {
 			log.error(e.getLocalizedMessage(), e);
 		}
+		return false;
 
 	}
 
