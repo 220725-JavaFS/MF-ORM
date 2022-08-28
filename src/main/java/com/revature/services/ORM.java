@@ -241,7 +241,7 @@ public class ORM {
 		log.info(sql);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
-			statement.executeQuery();
+			statement.executeUpdate();
 			log.info("Object updated.");
 			return true;
 		} catch (SQLException e) {
@@ -289,7 +289,7 @@ public class ORM {
 		log.info(sql);
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
-			statement.executeQuery();
+			statement.executeUpdate();
 			log.info("Object deleted.");
 			return true;
 		} catch (SQLException e) {

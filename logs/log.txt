@@ -35,3 +35,23 @@
 17:22:22.194 [] [main] INFO  com.revature.services.ORM - Objects retrived.
 17:22:22.197 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES ('object','this is a test object') RETURNING id;
 17:22:22.197 [] [main] INFO  com.revature.services.ORM - Object stored.
+19:01:06.984 [] [main] INFO  com.revature.services.ORM - INSERT INTO FakeObject(name,description) VALUES ('object','this is a test object') RETURNING id;
+19:01:06.989 [] [main] INFO  com.revature.services.ORM - UPDATE FakeObject SET name = 'object',description = 'this is a test object' WHERE id = 1;
+19:01:06.990 [] [main] INFO  com.revature.services.ORM - DELETE FROM FakeObject WHERE  id  =1;
+19:01:06.992 [] [main] INFO  com.revature.services.ORM - SELECT * from FakeObject;
+19:11:46.235 [] [main] INFO  com.revature.services.ORM - UPDATE TestObject SET name = 'object',description = 'this is a test object' WHERE id = 1;
+19:11:46.239 [] [main] INFO  com.revature.services.ORM - Object updated.
+19:11:46.248 [] [main] INFO  com.revature.services.ORM - DELETE FROM TestObject WHERE  id  =1;
+19:11:46.248 [] [main] INFO  com.revature.services.ORM - Object deleted.
+19:11:46.251 [] [main] INFO  com.revature.services.ORM - SELECT * from TestObject;
+19:11:46.252 [] [main] INFO  com.revature.services.ORM - Objects retrived.
+19:11:46.256 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES ('object','this is a test object') RETURNING id;
+19:11:46.256 [] [main] INFO  com.revature.services.ORM - Object stored.
+11:19:03.591 [] [main] INFO  com.revature.services.ORM - UPDATE TestObject SET name = 'object',description = 'this is a test object' WHERE id = 1;
+11:19:03.596 [] [main] INFO  com.revature.services.ORM - Object updated.
+11:19:03.606 [] [main] INFO  com.revature.services.ORM - DELETE FROM TestObject WHERE  id  =1;
+11:19:03.606 [] [main] INFO  com.revature.services.ORM - Object deleted.
+11:19:03.609 [] [main] INFO  com.revature.services.ORM - SELECT * from TestObject;
+11:19:03.610 [] [main] INFO  com.revature.services.ORM - Objects retrived.
+11:19:03.613 [] [main] INFO  com.revature.services.ORM - INSERT INTO TestObject(name,description) VALUES ('object','this is a test object') RETURNING id;
+11:19:03.613 [] [main] INFO  com.revature.services.ORM - Object stored.
